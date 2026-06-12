@@ -1,0 +1,15 @@
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# PDF output (optional, keep if you want to distribute compiled PDF)
+# *.pdf
+
+# OS files
+.DS_Store
+Thumbs.db

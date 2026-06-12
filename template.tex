@@ -1,0 +1,119 @@
+% ===========================================================================
+% 广东工业大学 LaTeX 论文模板
+% 编译: xelatex template.tex （两次）
+% 或: bash build.sh （自动两次编译）
+% ===========================================================================
+
+\documentclass{gdut-thesis}
+
+% ==================== 封面信息 ====================
+\coursename{课程设计（论文）}
+\thesistitle{论文题目}
+\thesistitleen{English Title}        % 可不填
+\college{学院名称}
+\major{专业名称}
+\class{班级}
+\studentid{学号}
+\studentname{姓名}
+\advisor{指导教师}
+\thesisdate{2026年6月}
+
+% ==================== 关键词 ====================
+\zhkeywords{关键词1；关键词2；关键词3；关键词4；关键词5}
+\enkeywords{keyword1; keyword2; keyword3; keyword4; keyword5}
+
+\begin{document}
+
+% ==================== 封面 ====================
+\makecover
+
+% ==================== 中文摘要 ====================
+\begin{zhabstract}
+摘要正文（300 字左右），概括研究背景、方法、结果与结论。
+
+\end{zhabstract}
+
+% ==================== 英文摘要 ====================
+\begin{enabstract}
+Write your English abstract here (150--250 words).
+
+\end{enabstract}
+
+% ==================== 目录 ====================
+\tableofcontents
+\newpage
+
+% ==================== 正文 ====================
+\mainbody
+
+% ---- 第 1 章 ----
+\chapter{绪论}
+
+\section{研究背景与意义}
+正文内容。
+
+\section{国内外研究现状}
+\subsection{国外研究现状}
+正文内容。
+
+\subsection{国内研究现状}
+正文内容。
+
+\subsection{研究述评}
+正文内容。
+
+\section{研究内容与方法}
+正文内容。
+
+% ---- 第 2 章 ----
+\chapter{相关概念与理论基础}
+
+\section{核心概念}
+正文内容。
+
+\section{理论框架}
+正文内容。
+
+\section{本章小结}
+正文内容。
+
+% ---- 第 3 章 ----
+\chapter{分析与讨论}
+
+\section{问题分析}
+正文内容。
+
+\section{方案设计}
+正文内容。
+
+\section{结果讨论}
+正文内容。
+
+\section{本章小结}
+正文内容。
+
+% ---- 第 4 章 ----
+\chapter{结论与展望}
+
+\section{主要结论}
+正文内容。
+
+\section{不足与展望}
+正文内容。
+
+% ---- 参考文献 ----
+\begin{thebibliography}{99}
+
+\bibitem{ref1} 作者. 文献题名[J]. 刊名, 年份, 卷(期): 页码.
+\bibitem{ref2} 作者. 书名[M]. 出版地: 出版社, 年份.
+
+\end{thebibliography}
+
+% ---- 致谢 ----
+\begin{acknowledgments}
+
+感谢指导教师在课程设计过程中的悉心指导。
+
+\end{acknowledgments}
+
+\end{document}
