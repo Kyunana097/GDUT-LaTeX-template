@@ -42,6 +42,7 @@
 \RequirePackage{listings}
 \RequirePackage{algorithm, algpseudocode}
 \RequirePackage{siunitx}
+\RequirePackage{tikz}                % 封面水印/背景
 
 % ==================== 4. 页面布局 ====================
 \geometry{
@@ -236,25 +237,41 @@
 \newcommand{\makecover}{
     \thispagestyle{empty}
 
-    % 校徽（左上角）
-    \noindent\includegraphics[width=2cm]{figures/GDUT_logo1.png}
-    \vspace*{-20pt}
+    % ===== 顶部横幅（tikz overlay）=====
+    \begin{tikzpicture}[remember picture, overlay]
+        % 蓝色渐变背景条
+        \shade[left color=cyan!70!blue, right color=blue!70!black]
+            (current page.north west) rectangle
+            ([yshift=-3.5cm]current page.north east);
+        % 校徽（左）
+        \node[anchor=north west, inner sep=0pt]
+            at ([xshift=1.5cm, yshift=-0.4cm]current page.north west){
+            \includegraphics[width=2.2cm]{figures/GDUT_logo1.png}
+        };
+        % 学校名（右）
+        \node[anchor=north east, inner sep=0pt]
+            at ([xshift=-1.5cm, yshift=-1.4cm]current page.north east){
+            \textcolor{white}{\heiti\zihao{1}广东工业大学}
+        };
+    \end{tikzpicture}
 
+    % ===== 封面正文 =====
     \begin{center}
-        % 学校文字 logo
-        \includegraphics[width=12cm]{figures/GDUT_logo2.jpg}
-        \vspace{30pt}
+        \vspace*{4.5cm}
 
         % 课程名
         {\heiti\zihao{1} \gdut@coursename}
+
         \vspace{60pt}
 
         % 标题
         {\heiti\zihao{2} \gdut@thesistitle}
+
         \vspace{20pt}
         % 英文标题（可选）
         %{\zihao{4} \gdut@thesistitleen}
-        \vspace{80pt}
+
+        \vspace{70pt}
 
         % 个人信息表
         \begin{spacing}{2.0}

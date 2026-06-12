@@ -1,92 +1,87 @@
 % ===========================================================================
-% 广东工业大学 LaTeX 论文模板 —— 示例文件
+% 广东工业大学 LaTeX 模板 —— 示例论文
+% 刘大柱同学的嵌入式猪脚饭机设计
 % ===========================================================================
 
 \documentclass{gdut-thesis}
 
 % ==================== 封面信息 ====================
 \coursename{课程设计（论文）}
-\thesistitle{基于嵌入式的智能猪脚饭机控制系统设计与实现}
-\thesistitleen{Design and Implementation of Embedded Smart Pig Trotter Rice Machine Control System}
+\thesistitle{基于STM32的智能猪脚饭机控制系统设计与实现}
+\thesistitleen{Design and Implementation of STM32-Based Smart Pig Trotter Rice Machine}
 \college{计算机学院}
 \major{计算机科学与技术}
-\class{计科 4 班}
+\class{计科4班}
 \studentid{3124009999}
 \studentname{刘大柱}
 \advisor{张教授}
-\thesisdate{2026 年 6 月}
+\thesisdate{2026年6月}
 
 % ==================== 关键词 ====================
-\zhkeywords{猪脚饭；嵌入式系统；STM32；自动烹饪；物联网}
-\enkeywords{Pig Trotter Rice; Embedded System; STM32; Automatic Cooking; IoT}
+\zhkeywords{猪脚饭；嵌入式系统；STM32；PID控制；物联网；餐饮自动化}
+\enkeywords{Pig Trotter Rice; Embedded System; STM32; PID Control; IoT; Food Automation}
 
 \begin{document}
 
-% ==================== 封面 ====================
 \makecover
 
 % ==================== 中文摘要 ====================
 \begin{zhabstract}
-猪脚饭作为华南地区广受欢迎的传统美食，长期依赖人工制作，存在口味不稳定、出餐效率低等痛点。本文提出并设计了一套基于STM32嵌入式的智能猪脚饭机控制系统，通过PID温控算法精确控制卤制温度，配合步进电机实现米饭定量配送，并开发微信小程序实现远程点单。系统经20次实际烹饪测试，出餐时间从传统平均8分钟缩短至3分30秒，口味一致性评分达到4.8/5.0（N=20），验证了设计方案的有效性。
+猪脚饭作为华南地区广受欢迎的传统美食，长期依赖人工制作，存在口味不稳定、出餐效率低等痛点。本文提出并设计了一套基于STM32F407嵌入式的智能猪脚饭机控制系统。硬件方面采用PT100铂电阻配合MAX31865实现$\pm 0.5$\textdegree C卤制温控，42步进电机驱动螺旋输送机构实现米饭定量配送；软件方面采用增量式PID算法控制卤制温度，并以微信小程序实现远程点单与支付。经20次实际烹饪盲测，出餐时间从传统平均8分10秒缩短至3分30秒，口味一致性评分标准差从0.74降至0.18，验证了设计方案的工程有效性。
 \end{zhabstract}
 
 % ==================== 英文摘要 ====================
 \begin{enabstract}
-Pig trotter rice, a beloved traditional delicacy in southern China, has long relied on manual preparation, resulting in inconsistent flavor and slow service. This paper presents an embedded control system for a smart pig trotter rice machine based on STM32. The system employs PID temperature control for precise braising, stepper motors for automated rice dispensing, and a WeChat mini-program for remote ordering. In 20 cooking trials, service time decreased from an average of 8 minutes to 3 minutes and 30 seconds, with a flavor consistency score of 4.8/5.0 (N=20), validating the design.
+Pig trotter rice, a beloved traditional fast food in southern China, suffers from inconsistent quality and slow service due to its reliance on manual preparation. This paper presents an STM32F407-based embedded control system for an automated pig trotter rice machine. The hardware features PT100 temperature sensing with MAX31865 ADC for $\pm 0.5$\textdegree C braising control and a 42-stepper-motor-driven screw mechanism for rice dispensing. The software employs incremental PID for temperature regulation and a WeChat mini-program for remote ordering. In 20 blind taste tests, average service time decreased from 8min10s to 3min30s, and taste consistency (SD of blind scores) improved from 0.74 to 0.18, validating the design.
 \end{enabstract}
 
-% ==================== 目录 ====================
 \tableofcontents
 \newpage
-
-% ==================== 正文 ====================
 \mainbody
 
 % ---- 第 1 章 ----
 \chapter{绪论}
 
 \section{研究背景与意义}
-猪脚饭，又称隆江猪脚饭，源自广东揭阳隆江镇，以卤制猪蹄搭配米饭、酸菜为特色，是华南地区最具代表性的快餐之一。据统计，广东省内各类猪脚饭店铺超过 8 万家，年消费规模超过 200 亿元人民币。然而，行业现状不容乐观：
+猪脚饭，又称隆江猪脚饭，源自广东揭阳隆江镇，以卤制猪蹄搭配米饭、酸菜为特色，是华南地区最具代表性的快餐之一。据统计，广东省内各类猪脚饭店铺超过8万家，年消费规模超过200亿元\upcite{ref1}。然而行业现状不容乐观：
 
 \begin{enumerate}[label=（\arabic*）]
-    \item 传统猪脚饭制作高度依赖厨师经验，卤制火候、调料比例难以标准化，同一店铺不同时间段出品的口味存在明显波动。
-    \item 用餐高峰期（11:30--13:00）排队等待时间普遍超过 15 分钟，严重影响消费体验。
-    \item 人工成本占比高，一线城市猪脚饭店主厨月薪普遍在 8000--12000 元区间，挤压利润空间。
+    \item 制作高度依赖厨师经验，卤制火候和调料比例难以标准化。
+    \item 高峰期（11:30--13:00）排队等待时间普遍超过15分钟。
+    \item 一线城市猪脚饭店主厨月薪在8000--12000元区间，人工成本挤压利润空间。
 \end{enumerate}
 
-近年来，嵌入式技术和物联网的快速发展为传统餐饮的标准化、自动化提供了技术可能\upcite{ref1}。目前市场上已有智能炒菜机器人、自动面条机等产品，但尚无针对猪脚饭这一细分品类的自动化解决方案。因此，研发一款嵌入式驱动的智能猪脚饭机，兼具标准化出品、高效出餐和远程控制能力，具有显著的产业应用前景\upcite{ref2}。
+嵌入式技术和物联网的快速发展为传统餐饮标准化、自动化提供了技术可能\upcite{ref2}。目前市场上已有智能炒菜机器人、自动面条机等产品，但尚无针对猪脚饭这一细分品类的自动化方案。因此，研发一款嵌入式驱动的智能猪脚饭机具有显著的产业应用前景。
 
 \section{国内外研究现状}
-\subsection{餐饮自动化技术发展}
-餐饮自动化可追溯至 20 世纪 80 年代日本开发的自动寿司机。近年来，基于嵌入式控制、机器视觉和云计算的智能厨房设备快速发展。美国 Momentum Machines 公司研制的汉堡机器人可实现每小时 400 个汉堡的产能\upcite{ref3}。国内方面，碧桂园旗下千玺机器人集团研发了多款中餐烹饪机器人，盒马鲜生也在部分门店试用了自动炒菜设备\upcite{ref4}。但现有研究多集中于通用型炒菜机器人或西式快餐自动化，对中式传统卤制类菜肴的自动控制研究尚属空白。
+餐饮自动化可追溯至20世纪80年代日本开发的自动寿司机。美国Momentum Machines公司研制的汉堡机器人可实现每小时400个汉堡的产能\upcite{ref3}。国内碧桂园千玺机器人集团研发了多款中餐烹饪机器人\upcite{ref4}。但现有研究多集中于通用型炒菜机器人或西式快餐自动化，对中式卤制类菜肴的自动控制研究尚属空白。
 
-\subsection{猪脚饭制作工艺分析}
-猪脚饭的制作包含三个关键工序：卤制（猪蹄在含八角、桂皮、酱油等调料的卤汁中小火慢炖 2--3 小时）、米饭蒸煮（米水比 1:1.2，蒸 25 分钟）和配菜组装（酸菜、卤蛋、青菜的搭配）。其中卤制环节是决定口味的核心，需将温度控制在 85--95\textdegree C 之间，过高导致肉质松散，过低则不入味。这一温度区间的精确控制为嵌入式温控系统提供了明确的工程目标。
+猪脚饭制作包含三个关键工序：卤制（猪蹄含八角、桂皮、酱油，小火慢炖2--3小时）、米饭蒸煮（米水比1:1.2，蒸25分钟）和配菜组装。其中卤制是核心，需将温度控制在85--95\textdegree C之间——过高导致肉质松散，过低则不入味。此温度区间的精确控制为嵌入式温控系统提供了明确的工程目标。
 
-\section{本文主要工作与组织结构}
-本文围绕智能猪脚饭机控制系统的设计与实现，主要工作如下：第二章介绍系统总体架构；第三章详述硬件设计与信号调理；第四章阐述控制算法；第五章展示测试结果与数据分析。全文共 5 章。
+\section{本文结构}
+第二章介绍系统总体架构，第三章详述硬件设计，第四章阐述PID控制算法，第五章展示测试结果。全文共5章。
 
 % ---- 第 2 章 ----
 \chapter{系统总体设计}
 
 \section{需求分析}
-经过对 5 家猪脚饭店的实地调研，归纳出智能猪脚饭机的核心需求：
+经对5家猪脚饭店实地调研，归纳核心需求：
 
 \begin{enumerate}[label=（\arabic*）]
-    \item 卤制温控精度：温度波动不超过 $\pm 2$\textdegree C。
-    \item 出餐速度：单份猪脚饭出餐时间 $\leq$ 4 分钟。
-    \item 口味一致性：连续制作 20 份成品，由 5 人评审团评分，变异系数 $\leq$ 5\%。
-    \item 远程控制：支持微信小程序下单、支付、查看制作进度。
-    \item 食品安全：卤汁温度传感器需达到食品级防护等级（IP67 以上）。
+    \item 卤制温控精度：温度波动不超过$\pm 2$\textdegree C。
+    \item 出餐速度：单份$\leq$4分钟。
+    \item 口味一致性：连续制作20份，5人盲测评分变异系数$\leq 5\%$。
+    \item 远程控制：支持微信小程序下单、支付、查看进度。
+    \item 食品安全：卤汁温度传感器需达食品级防护（IP67）。
 \end{enumerate}
 
 \section{系统架构}
 系统采用"云-边-端"三级架构：
 
 \begin{description}
-    \item[端侧] 以 STM32F407 为主控芯片，搭载 PID 温控模块、步进电机驱动模块、称重传感器（HX711 模组），负责卤制、配饭、装盘的实时控制。
-    \item[边侧] 树莓派 4B 作为本地网关，运行 Node.js 服务，缓存订单队列，在断网时可离线管理 200 条以内的订单。
-    \item[云侧] 腾讯云轻量服务器部署订单管理系统，小程序端通过 HTTPS 协议与云服务器通信，云服务器通过 MQTT 协议下发指令至本地网关。
+    \item[端侧] STM32F407为主控，搭载PID温控模块、步进电机驱动、称重传感器（HX711），负责卤制、配饭、装盘的实时控制。
+    \item[边侧] 树莓派4B作本地网关，运行Node.js服务，断网时可离线管理200条以内订单。
+    \item[云侧] 腾讯云轻量服务器部署订单管理系统，小程序通过HTTPS与云服务器通信，云与边之间通过MQTT下发指令。
 \end{description}
 
 \begin{table}[H]
@@ -95,7 +90,7 @@ Pig trotter rice, a beloved traditional delicacy in southern China, has long rel
     \label{tab:specs}
     \begin{tabular}{lcc}
         \toprule
-        指标 & 设计值 & 国标/行业参考 \\
+        指标 & 设计值 & 参考标准 \\
         \midrule
         卤制温控精度 & $\pm 2$\textdegree C & GB/T 30838-2014 \\
         单份出餐时间 & $\leq 4$ min & — \\
@@ -107,103 +102,98 @@ Pig trotter rice, a beloved traditional delicacy in southern China, has long rel
 \end{table}
 
 \section{本章小结}
-本章明确了系统的功能需求与性能指标，给出了总体架构设计方案。接下来两章将分别从硬件和控制算法层面展开详细设计。
+本章明确了功能需求与性能指标，给出云-边-端三级架构方案。
 
 % ---- 第 3 章 ----
 \chapter{硬件设计与实现}
 
 \section{主控与温控模块}
-选用 STM32F407VET6 作为主控，主频 168MHz，具备 DSP 浮点运算能力，适合 PID 算法的实时计算。温度传感器选用 PT100 铂电阻，配合 MAX31865 模数转换器，可实现 0.03125\textdegree C 的分辨率。卤制锅体采用 304 不锈钢，底部嵌入 1500W 电热管，通过 STM32 输出 PWM 信号驱动固态继电器调节加热功率。
+选用STM32F407VET6作主控，主频168MHz，具备DSP浮点运算能力，适合PID实时计算。温度传感器选用PT100铂电阻，配合MAX31865模数转换器实现0.03125\textdegree C分辨率。卤制锅体采用304不锈钢，底部嵌入1500W电热管，STM32输出PWM驱动固态继电器调节加热功率。
 
 \section{配饭与装配模块}
-米饭配送采用螺旋输送机构，由 42 步进电机驱动。称重传感器 HX711 实时监测出饭量，达到目标值（200 $\pm$ 5 g）时停止输送。酸菜和卤蛋的添加由两个舵机控制的挡板机构完成。
+米饭配送采用螺旋输送机构，由42步进电机驱动。称重传感器HX711实时监测出饭量，达目标值（200$\pm$5 g）时停止。酸菜和卤蛋添加由两个舵机控制的挡板机构完成。
 
-\section{硬件实物与调试}
-图~\ref{fig:pcb} 为主控 PCB 板 3D 模型。实际焊接与调试过程中，发现 PT100 在卤汁沸腾时存在瞬时读数毛刺，通过增加软件滤波（滑动平均窗口 N=8）有效解决。
+\section{调试发现与处理}
+实际焊接调试中，PT100在卤汁沸腾时存在瞬时读数毛刺。通过增加滑动平均滤波（窗口N=8）有效消除，滤波前后对比如\tabref{tab:filter}。
 
-\begin{figure}[H]
+\begin{table}[H]
     \centering
-    % \includegraphics[width=0.6\textwidth]{figures/pcb.png}
-    \caption{主控 PCB 3D 视图（焊接后调试中）}
-    \label{fig:pcb}
-\end{figure}
+    \caption{滤波前后温度读数对比}
+    \label{tab:filter}
+    \begin{tabular}{lcc}
+        \toprule
+        指标 & 滤波前 & 滤波后 \\
+        \midrule
+        最大瞬时噪声 & $\pm 3.2$\textdegree C & $\pm 0.4$\textdegree C \\
+        稳态标准差 & 0.87\textdegree C & 0.12\textdegree C \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 % ---- 第 4 章 ----
-\chapter{控制算法与软件设计}
+\chapter{PID 控制算法与软件设计}
 
-\section{PID 温控算法}
-卤制温度控制采用增量式 PID 算法，控制周期 1 秒。离散化公式如\equref{eq:pid}：
+\section{增量式 PID 温控}
+卤制温度控制采用增量式PID，控制周期1秒：
 
 \begin{equation}
-    \Delta u(k) = K_p [e(k) - e(k-1)] + K_i e(k) + K_d [e(k) - 2e(k-1) + e(k-2)]
+    \Delta u(k) = K_p [e(k)-e(k-1)] + K_i e(k) + K_d [e(k)-2e(k-1)+e(k-2)]
     \label{eq:pid}
 \end{equation}
 
-其中 $e(k)$ 为第 $k$ 个采样时刻的温度偏差。通过 Ziegler-Nichols 法整定参数：$K_p = 18.5$，$K_i = 0.8$，$K_d = 3.2$。
+经Ziegler-Nichols法整定参数：$K_p=18.5$，$K_i=0.8$，$K_d=3.2$。设定温度90\textdegree C，超调量$<1.5$\textdegree C，稳态误差$\pm 0.5$\textdegree C，达到设计指标。
 
-\section{温度控制仿真}
-图~\ref{fig:pid_sim} 为 Simulink 仿真结果，设定温度 90\textdegree C。系统超调量小于 1.5\textdegree C，稳态误差 $\pm 0.5$\textdegree C，达到设计指标。
-
-\begin{figure}[H]
-    \centering
-    % \includegraphics[width=0.7\textwidth]{figures/pid_sim.pdf}
-    \caption{PID 温度控制仿真曲线}
-    \label{fig:pid_sim}
-\end{figure}
-
-\section{微信小程序开发}
-小程序采用微信云开发框架，前端使用 WXML + WXSS，云函数处理订单生成。用户扫码进入小程序后选择猪脚饭规格（大份/小份、加卤蛋/不加），支付后订单推送至树莓派网关。
+\section{微信小程序}
+小程序采用微信云开发框架，WXML+WXSS前端，云函数处理订单生成。用户扫码→选规格（大份/小份、加卤蛋/不加）→支付→订单推送至树莓派网关。
 
 % ---- 第 5 章 ----
 \chapter{测试结果与分析}
 
 \section{测试方案}
-在实验室环境下进行 20 次连续烹饪测试，每次出品后由 5 人评审团进行盲测评分（1--5 分）。同时记录每次出餐时间。
+实验室环境下20次连续烹饪测试，每次出品后5人评审团盲测评分（1--5分），同时记录出餐时间。
 
 \section{结果分析}
 
 \begin{table}[H]
     \centering
-    \caption{自动猪脚饭机 vs 传统人工对比（N=20）}
+    \caption{自动猪脚饭机 vs 传统人工对比（$N=20$）}
     \label{tab:results}
     \begin{tabular}{lccc}
         \toprule
-        指标 & 自动机（本文方案） & 传统人工 & 改进幅度 \\
+        指标 & 本文方案 & 传统人工 & 改进幅度 \\
         \midrule
-        平均出餐时间 & 3 分 30 秒 & 8 分 10 秒 & $-57.1$\% \\
+        平均出餐时间 & 3分30秒 & 8分10秒 & $-57.1$\% \\
         口味评分均值 & 4.81 & 3.92 & $+22.7$\% \\
         评分标准差 & 0.18 & 0.74 & $-75.7$\% \\
-        温控偏差 & $\pm 0.5$\textdegree C & 估计 $\pm 8$\textdegree C & — \\
+        温控偏差 & $\pm 0.5$\textdegree C & 估$\pm 8$\textdegree C & — \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-如\tabref{tab:results}所示，本文方案在出餐速度和口味一致性上均显著优于人工模式。评分标准差从 0.74 骤降至 0.18，降幅达 75.7\%，说明智能化控制对口味标准化的贡献最为突出。
+如\tabref{tab:results}，本文方案在出餐速度和口味一致性上均显著优于人工。评分标准差从0.74骤降至0.18，降幅达75.7\%。
 
 \section{不足与改进方向}
-（1）当前机器仅支持单卤锅，高峰期产能受限（理论最大 15 份/小时），后续可扩展为双锅并行；（2）卤料配比仍依赖人工预调包，未实现全自动调配；（3）未针对不同产地猪蹄的肉质差异做自适应参数补偿。
+当前仅支持单卤锅，高峰期产能受限（理论最大15份/小时）；卤料配比仍依赖人工预调包；未针对不同产地猪蹄的肉质差异做自适应参数补偿。
 
 % ---- 第 6 章 ----
 \chapter{结论}
-本文针对猪脚饭行业的标准化痛点，设计并实现了一套基于 STM32 嵌入式的智能控制系统。通过 PID 温控算法、步进电机配饭机构和小程序远程下单的集成，实现了传统猪脚饭的自动化生产。实验结果表明，出餐时间缩短 57\%，口味一致性提升显著。本研究为传统中式卤制类快餐的自动化转型提供了可借鉴的工程方案。
+本文设计了基于STM32的智能猪脚饭机控制系统。经PID温控、步进电机配饭和微信小程序远程下单的集成，出餐时间缩短57\%，口味一致性提升显著。本研究为中式卤制类快餐的自动化转型提供了可借鉴的工程方案。
 
-在更广泛的层面上，本文试图论证：嵌入式技术不仅适用于工业控制和高科技产品，同样可以"降维打击"传统餐饮行业。当一碗猪脚饭的背后站着 STM32、PID 算法和 MQTT 协议时，它就不再仅仅是碳水与胶原蛋白的组合，而是第四次工业革命深入日常生活的一个微小而确切的注脚。
+当一碗猪脚饭背后站着STM32、PID算法和MQTT协议时，它就不再仅仅是碳水与胶原蛋白的组合，而是第四次工业革命深入日常生活的一个微小而确切的注脚。
 
 % ---- 参考文献 ----
 \begin{thebibliography}{99}
 
-\bibitem{ref1} Lee J, Bagheri B, Kao H A. A cyber-physical systems architecture for industry 4.0-based manufacturing systems[J]. Manufacturing Letters, 2015, 3: 18-23.
-\bibitem{ref2} 刘强, 丁德宇. 智能制造之路：数字化工厂[M]. 北京: 机械工业出版社, 2019.
+\bibitem{ref1} 广东省餐饮行业协会. 2025年广东快餐行业发展报告[R]. 广州, 2025.
+\bibitem{ref2} Lee J, Bagheri B, Kao H A. A cyber-physical systems architecture for industry 4.0-based manufacturing systems[J]. Manufacturing Letters, 2015, 3: 18-23.
 \bibitem{ref3} Momentum Machines Inc. The future of fast food: Automated burger production[R]. San Francisco, 2018.
-\bibitem{ref4} 千玺机器人集团. 中餐烹饪机器人技术白皮书[R]. 佛山: 碧桂园, 2021.
+\bibitem{ref4} 千玺机器人集团. 中餐烹饪机器人技术白皮书[R]. 佛山, 2021.
 
 \end{thebibliography}
 
 % ---- 致谢 ----
 \begin{acknowledgments}
-
-感谢张教授在嵌入式系统课程中的悉心指导，感谢同组同学在代码调试期间的无私帮助，感谢学校食堂猪脚饭窗口提供的灵感来源。
-
+感谢张教授在嵌入式系统课程中的悉心指导，感谢同组同学在代码调试期间的无私帮助，感谢学校食堂猪脚饭窗口提供的持续灵感来源。
 \end{acknowledgments}
 
 \end{document}
